@@ -115,19 +115,19 @@ def prepare_data(filepath, src,dest):
 
 # Prepare train dataset by copying images from food-101/images to food-101/train using the file train.txt
 print("Creating train data...")
-prepare_data('spell/food-101/meta/train.txt', 'spell/food-101/images', 'spell/food-101/train')
+prepare_data('food101/meta/train.txt', 'food101/images', 'food101/train')
 
 # Prepare test data by copying images from food-101/images to food-101/test using the file test.txt
 print("Creating test data...")
-prepare_data('spell/food-101/meta/test.txt', 'spell/food-101/images', 'spell/food-101/test')
+prepare_data('food101/meta/test.txt', 'food101/images', 'food101/test')
 
 # Check how many files are in the train folder
 print("Total number of samples in train folder")
-#find 'spell/food-101/train' -type d -or -type f -printf '.' | wc -c
+#find 'food101/train' -type d -or -type f -printf '.' | wc -c
 
 # Check how many files are in the test folder
 print("Total number of samples in test folder")
-#find 'spell/food-101/test' -type d -or -type f -printf '.' | wc -c
+#find 'food101/test' -type d -or -type f -printf '.' | wc -c
 
 """### Create a subset of data with few classes(3) - train_mini and test_mini for experimenting
 
@@ -154,9 +154,9 @@ def dataset_mini(food_list, src, dest):
 # picking 3 food items and generating separate data folders for the same
 #food_list = ['samosa','pizza','omelette']
 #src_train = '/content/gdrive/My Drive/Sistemi-ICSE2/food-101/food-101/train'
-dest_train = 'spell/food-101/train'
+dest_train = 'food101/train'
 #src_test = '/content/gdrive/My Drive/Sistemi-ICSE2/food-101/food-101/test'
-dest_test = 'spell/food-101/test'
+dest_test = 'food101/test'
 
 """
 * Keras and other Deep Learning libraries provide pretrained models  
@@ -183,18 +183,15 @@ n = 101
 food_list = pick_n_random_classes(n)
 
 import tensorflow as tf
-import tensorflow._api.v1.keras.backend as K
-from tensorflow._api.v1.keras import regularizers
-from tensorflow._api.v1.keras.applications.inception_v3 import InceptionV3
-from tensorflow._api.v1.keras.models import Sequential, Model, load_model
-from tensorflow._api.v1.keras.layers import Dense, Dropout, Activation, Flatten
-from tensorflow._api.v1.keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D, GlobalAveragePooling2D, AveragePooling2D
-from tensorflow._api.v1.keras.preprocessing.image import ImageDataGenerator
-from tensorflow._api.v1.keras.callbacks import ModelCheckpoint, CSVLogger
-from tensorflow._api.v1.keras.optimizers import SGD
-
-
-
+import tensorflow.keras.backend as K
+from tensorflow.keras import regularizers
+from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.models import Sequential, Model, load_model
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
+from tensorflow.keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D, GlobalAveragePooling2D, AveragePooling2D
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
+from tensorflow.keras.optimizers import SGD
 
 K.clear_session()
 
