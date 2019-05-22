@@ -37,7 +37,13 @@ print(tf.test.gpu_device_name())
 import os
 from pathlib import Path
 
+def prova():
+    f = open("guru99.txt", "w+")
+    return f
+prova()
+
 os.makedirs("logs")
+
 
 exit(0)
 
