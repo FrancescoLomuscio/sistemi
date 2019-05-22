@@ -179,26 +179,14 @@ def training():
     checkpointer = ModelCheckpoint(filepath='logs/best_model_101class.hdf5', verbose=1, save_best_only=True)
     csv_logger = CSVLogger('logs/history.log')
 
-    for i in range(1):
-        if not os.listdir('logs'):
-            print('Empty dir')
-            history = model.fit_generator(train_generator,
-                            steps_per_epoch = nb_train_samples // batch_size,
-                            validation_data=validation_generator,
-                            validation_steps=nb_validation_samples // batch_size,
-                            epochs=1,
-                            verbose=1,
-                            callbacks=[csv_logger, checkpointer])
-        else:
-            print('Not empty dir')
-            model = load_model('logs/best_model_101class.hdf5')
-            history = model.fit_generator(train_generator,
-                                steps_per_epoch = nb_train_samples // batch_size,
-                                validation_data=validation_generator,
-                                validation_steps=nb_validation_samples // batch_size,
-                                epochs=1,
-                                verbose=1,
-                                callbacks=[csv_logger, checkpointer])
+    
+    history = model.fit_generator(train_generator,
+                        steps_per_epoch = nb_train_samples // batch_size,
+                        validation_data=validation_generator,
+                        validation_steps=nb_validation_samples // batch_size,
+                        epochs=1,
+                        verbose=1,
+                        callbacks=[csv_logger, checkpointer])
 
 
     model.save('model_trained_101class.hdf5')
