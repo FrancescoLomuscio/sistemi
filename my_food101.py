@@ -64,11 +64,14 @@ def prepare_data(filepath, src,dest):
             for i in classes_images[food]:
                 if not Path(os.path.join(dest,food,i)).is_file():
                     copy(os.path.join(src,food,i), os.path.join(dest,food,i))
+        return Path(dest)
     print("Copying Done#")
+
 
 # Prepare train dataset by copying images from food-101/images to food-101/train using the file train.txt
 print("Creating train data...")
 prepare_data('food101/meta/train.txt', 'food101/images', 'food101/train')
+exit(0)
 
 # Prepare test data by copying images from food-101/images to food-101/test using the file test.txt
 print("Creating test data...")
