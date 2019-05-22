@@ -71,7 +71,7 @@ for dir in os.listdir(data_dir):
     if dim_f < 1000:
         print(dir, ' : ', dim_f)
 """		
-foods_sorted = sorted(os.listdir("uploads/food-101/images"))
+foods_sorted = sorted(os.listdir("food101/images"))
 """
 food_id = 0
 for i in range(rows):
