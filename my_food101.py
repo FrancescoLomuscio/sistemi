@@ -37,72 +37,14 @@ print(tf.test.gpu_device_name())
 import os
 from pathlib import Path
 
-def prova():
-    f = open("guru99.txt", "w+")
-    return f
-prova()
-
-os.makedirs("logs")
-
-
-exit(0)
-
-def get_data_extract():
-  if Path('/content/gdrive/My Drive/Sistemi-ICSE2/food-101.tar.gz').is_file():
-    print("Dataset already exists")
-    print("Extracting data..")
-    #tar xzvf '/content/gdrive/My Drive/Sistemi-ICSE2/food-101.tar.gz' -C '/content/gdrive/My Drive/Sistemi-ICSE2/food-101'
-    print("Extraction done#")
-  else:
-    print("Downloading the data...")
-    #wget http://data.vision.ee.ethz.ch/cvl/food-101.tar.gz -O '/content/gdrive/My Drive/Sistemi-ICSE2/food-101.tar.gz'
-    print("Dataset downloaded#")
-    print("Extracting data..")
-    #tar xzvf '/content/gdrive/My Drive/Sistemi-ICSE/food-101.tar.gz' -C '/content/gdrive/My Drive/Sistemi-ICSE/food-101'
-    print("Extraction done#")
-
 
 import matplotlib.pyplot as plt
 import matplotlib.image as img
-# %matplotlib inline
 import numpy as np
 from collections import defaultdict
 import collections
 
-"""
-# Visualize the data, showing one image per class from 101 classes
-rows = 17
-cols = 6
-fig, ax = plt.subplots(rows, cols, figsize=(25,25))
-fig.suptitle("Showing one random image from each class", y=1.05, fontsize=24) # Adding  y=1.05, fontsize=24 helped me fix the suptitle overlapping with axes issue
-data_dir = "/content/gdrive/My Drive/Sistemi-ICSE2/food-101/food-101/images"
-print("classes #: " + str(len(os.listdir(data_dir))))
-for dir in os.listdir(data_dir):
-    dim_f = len(os.listdir("/content/gdrive/My Drive/Sistemi-ICSE2/food-101/food-101/images/" + dir))
-    if dim_f < 1000:
-        print(dir, ' : ', dim_f)
-"""		
 foods_sorted = sorted(os.listdir("food101/images"))
-"""
-food_id = 0
-for i in range(rows):
-    for j in range(cols):
-        try:
-            food_selected = foods_sorted[food_id] 
-            food_id += 1
-        except:
-            break
-        food_selected_images = os.listdir(os.path.join(data_dir,food_selected)) # returns the list of all files present in each food category
-        food_selected_random = np.random.choice(food_selected_images) # picks one food item from the list as choice, takes a list and returns one random item
-        img = plt.imread(os.path.join(data_dir,food_selected, food_selected_random))
-        ax[i][j].imshow(img)
-        ax[i][j].set_title(food_selected, pad = 10)
-
-plt.setp(ax, xticks=[],yticks=[])
-plt.tight_layout()
-# https://matplotlib.org/users/tight_layout_guide.html
-
-"""### Split the image data into train and test using train.txt and test.txt"""
 
 # Helper method to split dataset into train and test folders
 from shutil import copy
@@ -154,19 +96,8 @@ print("Total number of samples in test folder")
 # Helper method to create train_mini and test_mini data samples
 from shutil import copytree, rmtree
 
-def dataset_mini(food_list, src, dest):
-    if os.path.exists(dest):
-        rmtree(dest) # removing dataset_mini(if it already exists) folders so that we will have only the classes that we want
-    os.makedirs(dest)
-    for food_item in food_list :
-        print("Copying images into",food_item)
-        copytree(os.path.join(src,food_item), os.path.join(dest,food_item))
 
-# picking 3 food items and generating separate data folders for the same
-#food_list = ['samosa','pizza','omelette']
-#src_train = '/content/gdrive/My Drive/Sistemi-ICSE2/food-101/food-101/train'
 dest_train = 'food101/train'
-#src_test = '/content/gdrive/My Drive/Sistemi-ICSE2/food-101/food-101/test'
 dest_test = 'food101/test'
 
 """
@@ -190,7 +121,7 @@ def pick_n_random_classes(n):
   return food_list
 
 # Lets try with more classes than just 3. Also, this time lets randomly pick the food classes
-n = 101
+n = 1
 food_list = pick_n_random_classes(n)
 
 import tensorflow as tf
@@ -204,75 +135,76 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
 from tensorflow.keras.optimizers import SGD
 
-K.clear_session()
+def training():
+    K.clear_session()
 
-n_classes = 101
-img_width, img_height = 299, 299
-train_data_dir = dest_train
-validation_data_dir = dest_test
-nb_train_samples = 75750
-nb_validation_samples = 25250
-batch_size = 16
+    img_width, img_height = 299, 299
+    train_data_dir = dest_train
+    validation_data_dir = dest_test
+    nb_train_samples = 750#75750
+    nb_validation_samples = 250#25250
+    batch_size = 16
 
-train_datagen = ImageDataGenerator(
-    rescale=1. / 255,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True)
+    train_datagen = ImageDataGenerator(
+        rescale=1. / 255,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True)
 
-test_datagen = ImageDataGenerator(rescale=1. / 255)
+    test_datagen = ImageDataGenerator(rescale=1. / 255)
 
-train_generator = train_datagen.flow_from_directory(
-    train_data_dir,
-    target_size=(img_height, img_width),
-    batch_size=batch_size,
-    class_mode='categorical')
+    train_generator = train_datagen.flow_from_directory(
+        train_data_dir,
+        target_size=(img_height, img_width),
+        batch_size=batch_size,
+        class_mode='categorical')
 
-validation_generator = test_datagen.flow_from_directory(
-    validation_data_dir,
-    target_size=(img_height, img_width),
-    batch_size=batch_size,
-    class_mode='categorical')
+    validation_generator = test_datagen.flow_from_directory(
+        validation_data_dir,
+        target_size=(img_height, img_width),
+        batch_size=batch_size,
+        class_mode='categorical')
 
 
-inception = InceptionV3(weights='imagenet', include_top=False)
-x = inception.output
-x = GlobalAveragePooling2D()(x)
-x = Dense(128,activation='relu')(x)
-x = Dropout(0.2)(x)
+    inception = InceptionV3(weights='imagenet', include_top=False)
+    x = inception.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(128,activation='relu')(x)
+    x = Dropout(0.2)(x)
 
-predictions = Dense(3,kernel_regularizer=regularizers.l2(0.005), activation='softmax')(x)
+    predictions = Dense(3,kernel_regularizer=regularizers.l2(0.005), activation='softmax')(x)
 
-model = Model(inputs=inception.input, outputs=predictions)
-model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
-checkpointer = ModelCheckpoint(filepath='logs/best_model_101class.hdf5', verbose=1, save_best_only=True)
-csv_logger = CSVLogger('logs/history.log')
+    model = Model(inputs=inception.input, outputs=predictions)
+    model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
+    checkpointer = ModelCheckpoint(filepath='logs/best_model_101class.hdf5', verbose=1, save_best_only=True)
+    csv_logger = CSVLogger('logs/history.log')
 
-for i in range(10):
-    if not os.listdir('logs'):
-        print('Empty dir')
-        history = model.fit_generator(train_generator,
-                        steps_per_epoch = nb_train_samples // batch_size,
-                        validation_data=validation_generator,
-                        validation_steps=nb_validation_samples // batch_size,
-                        epochs=1,
-                        verbose=1,
-                        callbacks=[csv_logger, checkpointer])
-    else:
-        print('Not empty dir')
-        model = load_model('logs/best_model_101class.hdf5')
-        history = model.fit_generator(train_generator,
+    for i in range(1):
+        if not os.listdir('logs'):
+            print('Empty dir')
+            history = model.fit_generator(train_generator,
                             steps_per_epoch = nb_train_samples // batch_size,
                             validation_data=validation_generator,
                             validation_steps=nb_validation_samples // batch_size,
                             epochs=1,
                             verbose=1,
                             callbacks=[csv_logger, checkpointer])
+        else:
+            print('Not empty dir')
+            model = load_model('logs/best_model_101class.hdf5')
+            history = model.fit_generator(train_generator,
+                                steps_per_epoch = nb_train_samples // batch_size,
+                                validation_data=validation_generator,
+                                validation_steps=nb_validation_samples // batch_size,
+                                epochs=1,
+                                verbose=1,
+                                callbacks=[csv_logger, checkpointer])
 
 
-# model = load_model('/content/gdrive/My Drive/Sistemi-ICSE2/logs/best_model_3class.hdf5')
-model.save('model_trained_101class.hdf5')
+    model.save('model_trained_101class.hdf5')
+    return model
 
+training()
 
 import matplotlib.pyplot as plt
 def plot_accuracy(history,title):
