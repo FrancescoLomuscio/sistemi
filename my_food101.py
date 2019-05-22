@@ -67,42 +67,23 @@ def prepare_data(filepath, src,dest):
 
     print("Copying Done#")
     return Path(dest)
-
+""" DONE """
 # Prepare train dataset by copying images from food-101/images to food-101/train using the file train.txt
-print("Creating train data...")
-prepare_data('food101/meta/train.txt', 'food101/images', 'food101/train')
+# print("Creating train data...")
+# prepare_data('food101/meta/train.txt', 'food101/images', 'food101/train')
 
-
+""" DONE """
 # Prepare test data by copying images from food-101/images to food-101/test using the file test.txt
-print("Creating test data...")
-prepare_data('food101/meta/test.txt', 'food101/images', 'food101/test')
-exit(0)
+# print("Creating test data...")
+# prepare_data('food101/meta/test.txt', 'food101/images', 'food101/test')
 
-# Check how many files are in the train folder
-print("Total number of samples in train folder")
-#find 'food101/train' -type d -or -type f -printf '.' | wc -c
-
-# Check how many files are in the test folder
-print("Total number of samples in test folder")
-#find 'food101/test' -type d -or -type f -printf '.' | wc -c
-
-"""### Create a subset of data with few classes(3) - train_mini and test_mini for experimenting
-
-* We now have train and test data ready  
-* But to experiment and try different architectures, working on the whole data with 101 classes takes a lot of time and computation  
-* To proceed with further experiments, I am creating train_min and test_mini, limiting the dataset to 3 classes  
-* Since the original problem is multiclass classification which makes key aspects of architectural decisions different from that of binary classification, choosing 3 classes is a good start instead of 2
-"""
-
-# List of all 101 types of foods(sorted alphabetically)
-#foods_sorted
 
 # Helper method to create train_mini and test_mini data samples
 from shutil import copytree, rmtree
 
 
-dest_train = 'food101/train'
-dest_test = 'food101/test'
+dest_train = 'dataset/train'
+dest_test = 'dataset/test'
 
 """
 * Keras and other Deep Learning libraries provide pretrained models  
@@ -113,20 +94,24 @@ dest_test = 'food101/test'
 * We currently have a subset of dataset with 3 classes - samosa, pizza and omelette  
 * Use the below code to finetune Inceptionv3 pretrained model
 """
+
+
 # Helper function to select n random food classes
 import random
 def pick_n_random_classes(n):
-  food_list = []
-  random_food_indices = random.sample(range(len(foods_sorted)),n) # We are picking n random food classes
-  for i in random_food_indices:
-    food_list.append(foods_sorted[i])
-  food_list.sort()
-  print("These are the randomly picked food classes we will be training the model on...\n", food_list)
-  return food_list
+    food_list = []
+    random_food_indices = random.sample(range(len(foods_sorted)), n)
+    for i in random_food_indices:
+        food_list.append(foods_sorted[i])
+    food_list.sort()
+    print("These are the randomly picked food classes we will be training the model on...\n", food_list)
+    return food_list
+
 
 # Lets try with more classes than just 3. Also, this time lets randomly pick the food classes
 n = 1
 food_list = pick_n_random_classes(n)
+
 
 import tensorflow as tf
 import tensorflow.keras.backend as K
@@ -196,8 +181,10 @@ def training():
     model.save('model_trained_101class.hdf5')
     return model
 
+
 training()
 
+"""
 import matplotlib.pyplot as plt
 
 def plot_accuracy(history,title):
@@ -216,7 +203,7 @@ def plot_loss(history,title):
     plt.xlabel('epoch')
     plt.legend(['train_loss', 'validation_loss'], loc='best')
     plt.show()
-
+"""
 
 # plot_accuracy(history,'FOOD101-Inceptionv3')
 # plot_loss(history,'FOOD101-Inceptionv3')
