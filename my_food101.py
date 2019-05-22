@@ -26,6 +26,8 @@ Original file is located at
 ### Download and extract Food 101 Dataset
 """
 
+
+
 # Check if GPU is enabled
 import tensorflow as tf
 print(tf.__version__)
@@ -35,6 +37,9 @@ print(tf.test.gpu_device_name())
 import os
 from pathlib import Path
 
+os.makedirs("logs")
+
+exit(0)
 
 def get_data_extract():
   if Path('/content/gdrive/My Drive/Sistemi-ICSE2/food-101.tar.gz').is_file():
