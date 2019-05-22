@@ -195,6 +195,7 @@ def training():
 training()
 
 import matplotlib.pyplot as plt
+
 def plot_accuracy(history,title):
     plt.title(title)
     plt.plot(history.history['acc'])
