@@ -109,7 +109,7 @@ def pick_n_random_classes(n):
 
 
 # Lets try with more classes than just 3. Also, this time lets randomly pick the food classes
-n = 1
+n = 101
 food_list = pick_n_random_classes(n)
 
 
@@ -130,8 +130,8 @@ def training():
     img_width, img_height = 299, 299
     train_data_dir = dest_train
     validation_data_dir = dest_test
-    nb_train_samples = 750#75750
-    nb_validation_samples = 250#25250
+    nb_train_samples = 75750
+    nb_validation_samples = 25250
     batch_size = 16
 
     train_datagen = ImageDataGenerator(
