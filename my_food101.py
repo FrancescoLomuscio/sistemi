@@ -165,17 +165,15 @@ def training():
 
     model = Model(inputs=inception.input, outputs=predictions)
     model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
-    checkpointer = ModelCheckpoint(filepath='food101/best_model_101class.hdf5', verbose=1, save_best_only=True)
-    csv_logger = CSVLogger('food101/history.log')
-
+    # checkpointer = ModelCheckpoint(filepath='food101/best_model_101class.hdf5', verbose=1, save_best_only=True)
+    # csv_logger = CSVLogger('food101/history.log')
 
     history = model.fit_generator(train_generator,
-                        steps_per_epoch = nb_train_samples // batch_size,
-                        validation_data=validation_generator,
-                        validation_steps=nb_validation_samples // batch_size,
-                        epochs=1,
-                        verbose=1,
-                        callbacks=[csv_logger, checkpointer])
+                                  steps_per_epoch = nb_train_samples // batch_size,
+                                  validation_data=validation_generator,
+                                  validation_steps=nb_validation_samples // batch_size,
+                                  epochs=1,
+                                  verbose=1,)
 
 
     model.save('model_trained_101class.hdf5')
