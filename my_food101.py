@@ -30,8 +30,6 @@ Original file is located at
 
 # Check if GPU is enabled
 import tensorflow as tf
-print(tf.__version__)
-print(tf.test.gpu_device_name())
 
 # Helper function to download data and extract
 import os
@@ -44,7 +42,8 @@ import numpy as np
 from collections import defaultdict
 import collections
 
-foods_sorted = sorted(os.listdir("food101/images"))
+foods_sorted = open("classes.txt").readlines()
+print(foods_sorted)
 
 # Helper method to split dataset into train and test folders
 from shutil import copy
@@ -108,10 +107,8 @@ def pick_n_random_classes(n):
     return food_list
 
 
-# Lets try with more classes than just 3. Also, this time lets randomly pick the food classes
 n = 101
-food_list = pick_n_random_classes(n)
-
+food_list = foods_sorted
 
 import tensorflow as tf
 import tensorflow.keras.backend as K
@@ -154,33 +151,33 @@ def training():
         batch_size=batch_size,
         class_mode='categorical')
 
-
     inception = InceptionV3(weights='imagenet', include_top=False)
     x = inception.output
     x = GlobalAveragePooling2D()(x)
-    x = Dense(128,activation='relu')(x)
+    x = Dense(128, activation='relu')(x)
     x = Dropout(0.2)(x)
 
-    predictions = Dense(3,kernel_regularizer=regularizers.l2(0.005), activation='softmax')(x)
+    predictions = Dense(n, kernel_regularizer=regularizers.l2(0.005), activation='softmax')(x)
 
     model = Model(inputs=inception.input, outputs=predictions)
     model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
     # checkpointer = ModelCheckpoint(filepath='food101/best_model_101class.hdf5', verbose=1, save_best_only=True)
-    # csv_logger = CSVLogger('food101/history.log')
+    csv_logger = CSVLogger('food101/history.log')
 
     history = model.fit_generator(train_generator,
                                   steps_per_epoch = nb_train_samples // batch_size,
                                   validation_data=validation_generator,
                                   validation_steps=nb_validation_samples // batch_size,
-                                  epochs=1,
-                                  verbose=1,)
+                                  epochs=10,
+                                  verbose=1,
+                                  callbacks=[csv_logger])
 
 
     model.save('model_trained_101class.hdf5')
     return model
 
 
-training()
+#training()
 
 """
 import matplotlib.pyplot as plt
@@ -214,61 +211,53 @@ def plot_loss(history,title):
 * **The best model saved has a Top-1 validation accuracy of 93%**
 
 ### Predicting classes for new images from internet using the best trained model
-
-
-# Loading the best saved model to make predictions
-# %%time
-import tensorflow.keras.backend as K
-from tensorflow.keras.models import load_model
-
-K.clear_session()
-##ls '/content/gdrive/My Drive/Sistemi-ICSE2'
-#model_best = load_model('/content/gdrive/My Drive/Sistemi-ICSE2/model_trained_3class.hdf5',compile = False)
-
-* **Setting compile=False and clearing the session leads to faster loading of the saved model**
-* **Withouth the above addiitons, model loading was taking more than a minute#**
-
+"""
 
 from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
-import numpy as np
 import os
+import numpy as np
+def predict_class(model, images, show=True):
+    for img in images:
+        img = image.load_img(img, target_size=(299, 299))
+        img = image.img_to_array(img)
+        img = np.expand_dims(img, axis=0)
+        img /= 255.
 
-def predict_class(model, images, show = True):
-  for img in images:
-    img = image.load_img(img, target_size=(299, 299))
-    img = image.img_to_array(img)                    
-    img = np.expand_dims(img, axis=0)         
-    img /= 255.                                      
+        pred = model.predict(img)
+        index = np.argmax(pred)
+        # food_list.sort()
+        pred_value = food_list[index]
+        if show:
+            plt.imshow(img[0])
+            plt.axis('off')
+            plt.title(pred_value)
+            plt.show()
+    return pred_value
 
-    pred = model.predict(img)
-    index = np.argmax(pred)
-    food_list.sort()
-    pred_value = food_list[index]
-    if show:
-        plt.imshow(img[0])                           
-        plt.axis('off')
-        plt.title(pred_value)
-        plt.show()
-  return pred_value
 
-# Downloading images from internet using the URLs
-#wget -O samosa.jpg http://veggiefoodrecipes.com/wp-content/spell/2016/05/lentil-samosa-recipe-01.jpg
-#wget -O pizza.jpg http://104.130.3.186/assets/itemimages/400/400/3/default_9b4106b8f65359684b3836096b4524c8_pizza%20dreamstimesmall_94940296.jpg
-#wget -O omelette.jpg https://www.incredibleegg.org/wp-content/spell/basic-french-omelet-930x550.jpg
+def load_and_predict():
+    # Loading the best saved model to make predictions
+    # %%time
+    #import tensorflow.keras.backend as K
+    from tensorflow.keras.models import load_model
 
-# If you have an image in your local computer and want to try it, uncomment the below code to upload the image files
+    #K.clear_session()
+    model_best = load_model('model_trained_101class.hdf5', compile = False)
 
-# from google.colab import files
-# image = files.upload()
+    # Make a list of downloaded images and test the trained model
+    images = []
+    images.append('beignets1.jpg')
+    images.append('pizza.jpg')
+    images.append('gnocchi.jpg')
+    images.append('lasagna.jpg')
+    images.append('samosa.jpg')
+    images.append('omelette.jpg')
+    predict_class(model_best, images, True)
 
-# Make a list of downloaded images and test the trained model
-images = []
-images.append('samosa.jpg')
-images.append('pizza.jpg')
-images.append('omelette.jpg')
-predict_class(model_best, images, True)
 
+load_and_predict()
+"""
 * **Yes### The model got them all right##**
 
 ### Fine tune Inceptionv3 model with 11 classes of data
