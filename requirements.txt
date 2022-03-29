@@ -34,7 +34,7 @@ mock==3.0.5
 networkx==2.2
 numpy==1.16.1
 pandas==0.24.1
-paramiko==2.4.2
+paramiko==2.10.1
 Pillow==5.4.1
 protobuf==3.7.1
 pyaml==19.4.1
